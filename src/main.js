@@ -22,16 +22,14 @@
     self.Board.prototype = {
         get elements(){
             var elements = this.bars;
-            elements.push(this.ball);
+            //elements.push(this.ball);
             return elements;
         }
     }
-
-
 })();
-    /**se define la funcion anonuma para las barras
-     * recibe 4 parámetros y es tipo rectangulo.
-     */
+/**s
+ */
+
 (function(){
     self.Bar = function(x,y,width, height, board){
         this.x = x;
@@ -41,7 +39,7 @@
         this.board = board;
         this.board.bars.push(this);
         this.kind = "rectangle";
-        this.speed = 10;
+        this.speed = 7;
 
     }
 
@@ -66,6 +64,7 @@
   * esto es una vista
  */
 (function(){
+
     self.BoardView = function(canvas,board){
 
         this.canvas = canvas;
@@ -76,13 +75,27 @@
                 
     }
 
+    /**
+     * la funcion clean lo que hace es borrar el rectangula anterior
+     * this asigna las dimensiones del board-
+     */
+
     self.BoardView.prototype = {
+
+        clean: function(){
+            this.context.clearRect(0,0,this.board.width, this.board.height);
+        },
+
         draw: function(){
             for (var i = this.board.elements.length - 1; i >= 0; i--) {
                 var el = this.board.elements[i];
                 
                 draw(this.context, el);
             };
+        },
+        play: function(){
+            this.clean();
+            this.draw();
         }
     }
 
@@ -91,20 +104,23 @@
       *  
       */
 
-    function draw  (context, element){
+    function draw(context, element){
+               
+        switch(element.kind){
 
-        if(element !== null && element.hasOwnProperty("kind")){
-            switch(element.kind){
-                case "rectangle":
-                    context.fillRect(element.x, element.y, element.width, element.height)
-                    break;
-                case "ball":
-                context.fillRect(element.x, element.y, element.width, element.height)
-
-                
-        
-            }
-        }
+            case "rectangle":
+                context.fillRect(element.x, element.y, element.width, element.height);
+                break;
+            case "circle":
+                context.beginPath();
+                context.arc(element.x, element.y, element.radius,0,7);
+                context.fill();
+                context.closePath();
+                break;   
+                         
+    
+         }
+    
 
     }
 
@@ -112,23 +128,38 @@
 
 var board = new Board(800,400);
 var bar = new Bar(20, 100, 40, 100, board);
-var bar = new Bar(700, 100, 40, 100, board);
-
+var bar_2 = new Bar(700, 100, 40, 100, board);
 var canvas = document.getElementById('canvas');
 var board_view = new BoardView(canvas, board);
+//var ball = new Ball(400, 200, 10, Board);
 
+//  setInterval(main,100); antes de html5
+
+/**
+ * se identifican los keycodes de las teclas arriba y abajo
+ * 
+ */
 
 document.addEventListener("keydown", function(ev){
-    console.log(ev.keyCode);
+
+    ev.preventDefault();
+
     if(ev.keyCode == 38){
         bar.up();
     }
-    if(ev.keyCode == 40){
+    else if(ev.keyCode == 40){
         bar.down();
     }
+    else if(ev.keyCode == 104){
+        bar_2.up();
+    }
+    else if(ev.keyCode == 98){
+        bar_2.down();
+    }
     //de ambas formas se puede
+
     console.log(bar.toString());
-    console.log(""+bar);
+    console.log(""+bar_2);
 
 })
 
@@ -140,14 +171,21 @@ document.addEventListener("keydown", function(ev){
  * del script.
  * 
 */
-self.addEventListener("load", main);
+//self.addEventListener("load", main);
 
 /**doc
  * la clase main instancia nuestros objetos y le pasa a la vista el 
  * modelo que es el board.
  */
-function main(){
+
+ window.requestAnimationFrame(controller);
+
+
+function controller(){
+
+    board_view.play();
     
-    board_view.draw();
+    window.requestAnimationFrame(controller);
+
 
 }
