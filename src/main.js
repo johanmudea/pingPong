@@ -233,6 +233,8 @@ var canvas = document.getElementById('canvas');
 var board_view = new BoardView(canvas, board);
 var ball = new Ball(400, 200, 10, board);
 
+var line = new Bar(1, 1, 800, 2, board);
+var line = new Bar(1, 399, 800, 2, board);
 
 
 //  ANTES SE UTILIZABA setInterval(main,100); antes de html5
